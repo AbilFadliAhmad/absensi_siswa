@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Absensi Siswa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8 flex items-center justify-between border-b pb-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Kehadiran Siswa</h1>
+                <p class="text-slate-500 mt-1">Pencatatan absensi harian kelas</p>
+            </div>
+            <div class="text-right hidden sm:block">
+                <span class="text-sm font-medium text-slate-500 bg-white px-4 py-2 rounded-full border shadow-sm">
+                    Tahun Ajaran 2025/2026
+                </span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+
+            <!-- Kolom Kiri: Form Input Absensi -->
+            <div class="xl:col-span-1">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h2 class="text-lg font-bold text-slate-800 mb-5">Input Kehadiran</h2>
+
+                    <form action="/absen" method="POST" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+                            <input type="text" name="nama" required
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                placeholder="Contoh: Budi Santoso">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Kelas</label>
+                            <input type="text" name="kelas" required
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                placeholder="Contoh: X IPA 1">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Status Kehadiran</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <!-- Radio Button Custom Styling -->
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="status" value="Hadir" class="peer sr-only" required checked>
+                                    <div class="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 text-center font-medium transition-all">
+                                        Hadir
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="status" value="Izin" class="peer sr-only">
+                                    <div class="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 text-center font-medium transition-all">
+                                        Izin
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="status" value="Sakit" class="peer sr-only">
+                                    <div class="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50 peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-700 text-center font-medium transition-all">
+                                        Sakit
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="status" value="Alpa" class="peer sr-only">
+                                    <div class="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50 peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:text-rose-700 text-center font-medium transition-all">
+                                        Alpa
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit"
+                                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition-colors shadow-sm">
+                                Rekam Absensi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Kolom Kanan: Tabel Riwayat Absensi -->
+            <div class="xl:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="px-6 py-5 border-b border-slate-100 bg-white flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-slate-800">Riwayat Absensi Hari Ini</h2>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider font-semibold">
+                                    <th class="py-4 px-6 border-b">Waktu</th>
+                                    <th class="py-4 px-6 border-b">Nama Siswa</th>
+                                    <th class="py-4 px-6 border-b">Kelas</th>
+                                    <th class="py-4 px-6 border-b text-center">Status</th>
+                                    <th class="py-4 px-6 border-b text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-slate-100">
+                                {% for item in data_absen %}
+                                <tr class="hover:bg-slate-50 transition duration-150">
+                                    <td class="py-3 px-6 text-slate-500 text-xs">{{ item.waktu }}</td>
+                                    <td class="py-3 px-6 font-semibold text-slate-900">{{ item.nama }}</td>
+                                    <td class="py-3 px-6 text-slate-600">{{ item.kelas }}</td>
+                                    <td class="py-3 px-6 text-center">
+                                        <!-- Logika pewarnaan Badge menggunakan Tailwind -->
+                                        {% if item.status == 'Hadir' %}
+                                            <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">Hadir</span>
+                                        {% elif item.status == 'Izin' %}
+                                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Izin</span>
+                                        {% elif item.status == 'Sakit' %}
+                                            <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">Sakit</span>
+                                        {% else %}
+                                            <span class="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-bold">Alpa</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-6 text-center">
+                                        <a href="/hapus/{{ item.id }}"
+                                           onclick="return confirm('Hapus riwayat absen {{ item.nama }}?')"
+                                           class="text-rose-500 hover:text-rose-700 font-medium transition-colors">
+                                            Batal
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="py-12 text-center text-slate-400">
+                                        <svg class="mx-auto h-12 w-12 text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                        </svg>
+                                        Belum ada data absensi yang dicatat.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
